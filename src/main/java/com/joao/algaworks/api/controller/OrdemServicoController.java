@@ -13,18 +13,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.joao.algaworks.api.model.OrdemServicoInput;
 import com.joao.algaworks.api.model.OrdemServicoModel;
 import com.joao.algaworks.domain.model.OrdemServico;
 import com.joao.algaworks.domain.repository.OrdemServicoRepository;
 import com.joao.algaworks.domain.service.GestaoOrdemServicoService;
 
 @RestController
-@RequestMapping("/ordens-servico")
+@RequestMapping("/api/ordens-servico")
 public class OrdemServicoController {
 	
 	@Autowired
@@ -38,7 +40,8 @@ public class OrdemServicoController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public OrdemServicoModel criar(@Valid @RequestBody OrdemServico ordemServico) {
+	public OrdemServicoModel criar(@Valid @RequestBody OrdemServicoInput ordemServicoInput) {
+		OrdemServico ordemServico = toEntity(ordemServicoInput);
 		return toModel(gestaoOrdemServico.criar(ordemServico));
 	}
 	
@@ -58,6 +61,12 @@ public class OrdemServicoController {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@PutMapping("/{ordemServicoId}/finalizacao")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void finalizar(@PathVariable Long ordemServicoId) {
+		gestaoOrdemServico.finalizar(ordemServicoId);
+	}
+	
 	private OrdemServicoModel toModel(OrdemServico ordemServico) {
 		return modelMapper.map(ordemServico, OrdemServicoModel.class);
 	}
@@ -66,6 +75,10 @@ public class OrdemServicoController {
 		return ordensServico.stream()
 				.map(ordemServico -> toModel(ordemServico))
 				.collect(Collectors.toList());
+	}
+	
+	private OrdemServico toEntity(OrdemServicoInput ordemServicoInput) {
+		return modelMapper.map(ordemServicoInput, OrdemServico.class);
 	}
 	
 }

@@ -2,6 +2,8 @@ package com.joao.algaworks.domain.model;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,7 +21,9 @@ import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.joao.algaworks.api.model.Comentario;
 import com.joao.algaworks.domain.ValidationGroups;
+import com.joao.algaworks.domain.exception.NegocioException;
 
 
 @Entity
@@ -49,6 +54,10 @@ public class OrdemServico {
 	
 	@JsonProperty(access = Access.READ_ONLY)
 	private OffsetDateTime dataFinalizacao;
+	
+	@OneToMany(mappedBy = "ordemServico")
+	private List<Comentario> comentarios = new ArrayList<>();
+	
 	
 	
 	public Long getId() {
@@ -118,5 +127,21 @@ public class OrdemServico {
 			return false;
 		return true;
 	}
+	public List<Comentario> getComentarios() {
+		return comentarios;
+	}
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
+	}
+	public void finalizar() {
+		if(!StatusOrdemServico.ABERTA.equals(getStatus())) {
+			throw new NegocioException("Ordem de serviço não pode ser finalizada");
+		}
 		
+		setStatus(StatusOrdemServico.FINALIZADA);
+		setDataFinalizacao(OffsetDateTime.now());
+		
+	}
+		
+	
 }

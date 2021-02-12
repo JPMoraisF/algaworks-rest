@@ -11,7 +11,6 @@ import com.joao.algaworks.domain.model.OrdemServico;
 import com.joao.algaworks.domain.repository.ClienteRepository;
 import com.joao.algaworks.domain.repository.OrdemServicoRepository;
 
-//alo lalo
 @Service
 public class CadastroClienteService {
 
