@@ -40,11 +40,8 @@ public class GestaoOrdemServicoService {
 	
 	public void finalizar(Long ordemServicoId) {
 		OrdemServico ordemServico = buscar(ordemServicoId);
-		
 		ordemServico.finalizar();
-		
 		ordemServicoRepository.save(ordemServico);
-		
 	}
 
 	
